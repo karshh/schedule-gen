@@ -6,7 +6,10 @@ class Employees extends Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {Employees: []};
+		this.state = {Employees: [], 
+			value:'', 
+			valueName:''};
+    	this.handleChange = this.handleChange.bind(this);
 	}
 
 	componentDidMount() {
@@ -14,15 +17,24 @@ class Employees extends Component {
 	    .then((results) => this.setState({Employees: results.data}));
 	}
 
+	handleChange(e) {
+		this.setState({
+			value: e.target.value,
+			valueName: e.target.value === '' ? '' : e.target.options[e.target.selectedIndex].text
+		});
+
+	}
+
 	render() {
 		return (
 			<div>
-				<select>
+				<select id='employeeSelector' value={this.state.value} onChange={this.handleChange}>
 					<option value=''>- Select Employee -</option>
 					{this.state.Employees.map((employee) => (
-						<option value={employee.id}>{employee.name}</option>
+						<option name={employee.name} key={employee.id} value={employee.id}>{employee.name}</option>
 					))}
 				</select>
+				<p> Employee : {this.state.valueName} </p>
 			</div>
 
 			);

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import axios from 'axios';
+import Variables from './Variables';
 import Employees from './Employees';
 import './App.css';
 
@@ -12,18 +13,57 @@ class App extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://interviewtest.replicon.com/employees/1')
-    .then((results) => this.setState({employeesid: results.data}));
-    axios.get('http://interviewtest.replicon.com/time-off/requests')
-    .then((results) => this.setState({timeoffrequests: results.data}));
+    var weeklySchedule = [];
+    var shiftRules = {};
+    var employeeRules = [];
+    var rules = {};
+
+    // set up rules ID.
+    axios.get(Variables.BASE_URL + '/rule-definitions')
+    .then((results) => {
+        results.data.map((index) => {
+            rules[index.value] = index.id;
+        });
+
+    });
+
+    [23, 24, 25, 26].map((index) => {
+        weeklySchedule.push({
+            "week": index,
+            "schedule": []
+        });
+
+    });
+
+    axios.get(Variables.BASE_URL + '/employees')
+        .then((results) => {
+            results.data.map((index) => {
+                weeklySchedule.map((schedIndex) => {
+                    schedIndex.schedule[index.id] = [];
+                });
+            });
+        });
+
+
+    console.log({"data": weeklySchedule});
+
+    // set up employees.
+    
+        
+
+    //     console.log(employees);
+    // });
+
+    // axios.get('http://interviewtest.replicon.com/employees/1')
+    // .then((results) => employeeList = results.data);
+    // axios.get('http://interviewtest.replicon.com/time-off/requests')
+    // .then((results) => this.setState({timeoffrequests: results.data}));
     axios.get('http://interviewtest.replicon.com/weeks/23')
     .then((results) => this.setState({week23: results.data}));
-    axios.get('http://interviewtest.replicon.com/rule-definitions')
-    .then((results) => this.setState({ruleDefinition: results.data}));
     axios.get('http://interviewtest.replicon.com/shift-rules')
     .then((results) => this.setState({shiftRules: results.data}));
      
-    console.log('I was triggered during componentDidMount');
+    // console.log('I was triggered during componentDidMount');
   }
   render() {
     return (

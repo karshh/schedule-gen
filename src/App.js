@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import axios from 'axios';
+import Employees from './Employees';
 import './App.css';
 
 class App extends Component {
@@ -11,8 +12,6 @@ class App extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://interviewtest.replicon.com/employees')
-    .then((results) => this.setState({employees: results.data}));
     axios.get('http://interviewtest.replicon.com/employees/1')
     .then((results) => this.setState({employeesid: results.data}));
     axios.get('http://interviewtest.replicon.com/time-off/requests')
@@ -34,10 +33,7 @@ class App extends Component {
           <h1 className="App-title">Welcome to React</h1>
         </header>
         <pre>
-        <h1> Employees </h1>
-        <p>
-            {JSON.stringify(this.state.employees, null, 4) }
-        </p>
+        <Employees />
         <h1> Rule definition </h1>
         <p>
             {JSON.stringify(this.state.ruleDefinition, null, 4) }
@@ -54,7 +50,6 @@ class App extends Component {
         <p>
             {JSON.stringify(this.state.week23, null, 4) }
         </p>
-
         </pre>
       </div>
     );

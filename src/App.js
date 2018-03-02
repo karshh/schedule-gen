@@ -27,6 +27,7 @@ class App extends Component {
 
     });
 
+    // push in weekly schedule template.
     [23, 24, 25, 26].map((index) => {
         weeklySchedule.push({
             "week": index,
@@ -35,14 +36,19 @@ class App extends Component {
 
     });
 
+    // push in employee shift template.
     axios.get(Variables.BASE_URL + '/employees')
-        .then((results) => {
-            results.data.map((index) => {
-                weeklySchedule.map((schedIndex) => {
-                    schedIndex.schedule[index.id] = [];
-                });
+    .then((results) => {
+        results.data.map((index) => {
+            weeklySchedule.map((schedIndex) => {
+                schedIndex.schedule.push({"employeeid":index.id, "shift": []});
             });
         });
+    });
+
+    // assign random schedule.
+    var EMPLOYEES_PER_SHIFT = rules["EMPLOYEES_PER_SHIFT"];
+    
 
 
     console.log({"data": weeklySchedule});

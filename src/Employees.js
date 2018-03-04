@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-import Variables from './Variables';
+import ScheduleView from './ScheduleView';
 
 class Employees extends Component {
 
@@ -10,11 +9,6 @@ class Employees extends Component {
 			value:'', 
 			valueName:''};
     	this.handleChange = this.handleChange.bind(this);
-	}
-
-	componentDidMount() {
-	    axios.get(Variables.BASE_URL + '/employees')
-	    .then((results) => this.setState({Employees: results.data}));
 	}
 
 	handleChange(e) {
@@ -30,11 +24,13 @@ class Employees extends Component {
 			<div>
 				<select id='employeeSelector' value={this.state.value} onChange={this.handleChange}>
 					<option value=''>- Select Employee -</option>
-					{this.state.Employees.map((employee) => (
+					{this.props.employeeData.map((employee) => (
 						<option name={employee.name} key={employee.id} value={employee.id}>{employee.name}</option>
 					))}
 				</select>
-				<p> Employee : {this.state.valueName} </p>
+				{ this.state && this.state.valueName !== '' && <p> Employee : {this.state.valueName} </p> }
+
+				<ScheduleView employeeSchedule={this.props.scheduleInfo} />
 			</div>
 
 			);

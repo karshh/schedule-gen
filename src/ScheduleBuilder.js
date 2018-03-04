@@ -1,56 +1,90 @@
 import axios from 'axios';
-import Utils from './Utils';
 import Variables from './Variables';
 
-var ScheduleBuilder = function(app) {
 
-	var weeklySchedule = {};
-    var rules = {};
-    var employeeIDList = [];
 
-    // Generic constraints. Dummy values.
-    var constrantValues = {}
-    constrantValues['EMPLOYEES_PER_SHIFT'] = 0;
-    constrantValues['MIN_SHIFTS'] = 0;
-    constrantValues['MAX_SHIFTS'] = 0;
+function constraintsCheck(empID, shiftcache, schedule, day) {
+
+    // listing out all constraints of employees.
+    // this should allow abstraction in checking if employee meets shift requirements in features.
+    var ALREADYSCHEDULED = shiftcache.includes(empID);
+    var REQUESTEDTIMEOFF = schedule[empID].timeoffrequests.includes(day);
+
+
+    if (ALREADYSCHEDULED || REQUESTEDTIMEOFF) return true;
+
+    shiftcache.push(empID);
+    return false;
+
+}
+
+function buildSchedule(genericConstraintValues, specificConstraintValues, weeklySchedule, employeeIDList) {
+    var EMPLOYEES_PER_SHIFT = genericConstraintValues['EMPLOYEES_PER_SHIFT'];
+    Object.keys(weeklySchedule).forEach((key) => {
+
+        var sched = weeklySchedule[key].schedules;
+        for (var i = 1; i <= 7; i++) {
+            var shiftcache = [];
+            for (var j = EMPLOYEES_PER_SHIFT; j > 0; j--) {
+                var empID;
+                do {
+                    empID = employeeIDList[parseInt(Math.random() * employeeIDList.length, 10)] + "";
+                } while (constraintsCheck(empID, shiftcache, sched, i));
+                
+                sched[empID].schedule.push(i);
+            }
+        }
+    });
+
+}
+
+function ScheduleBuilder(app) {
+
+
+	var weeklySchedule = {}; // generic data which will be filtered upon employee choice.
+    var employeeIDList = []; // need this for options tab.
+
+    var rules = {}; 
+
+    // Schedule constraints. Dummy values for generic ones to be replaced later.
+    var genericConstrantValues = {};
+    genericConstrantValues['EMPLOYEES_PER_SHIFT'] = 0;
+    genericConstrantValues['MIN_SHIFTS'] = 0;
+    genericConstrantValues['MAX_SHIFTS'] = 0;
+
+    // specific to employee, that is.
+    var specificConstraintaValues = {};
+    specificConstraintaValues['EMPLOYEES_PER_SHIFT'] = [];
+    specificConstraintaValues['MIN_SHIFTS'] = [];
+    specificConstraintaValues['MAX_SHIFTS'] = [];
 
     var PROMISES = [
-        axios.get(Variables.BASE_URL + '/rule-definitions'),
-        axios.get(Variables.BASE_URL + '/employees'),
-        axios.get(Variables.BASE_URL + '/time-off/requests'),
-        axios.get(Variables.BASE_URL + '/shift-rules'),
-        axios.get(Variables.BASE_URL + '/weeks')
+        axios.get(Variables.RULE_DEFINITIONS_URL),
+        axios.get(Variables.EMPLOYEES_URL),
+        axios.get(Variables.TIME_OFF_REQUESTS_URL),
+        axios.get(Variables.SHIFT_RULES_URL),
+        axios.get(Variables.WEEKS_URL)
     ];
 
-    // push in weekly schedule template.
+    // push in a weekly schedule template.
     for (var index = Variables.WEEK_START; index <= Variables.WEEK_END; index++) 
         weeklySchedule[(index + "")] = { "schedules": {} };
 
     Promise.all(PROMISES).then(([ruleDef, employees, timeoff, shiftRules, weeks]) => {
-        //
-        // Adding rules.
-        //
-        ruleDef.data.forEach((index) => {
-            rules[(index.id + "")] = {
-                'name': index.value,
-                'generic': 0, 
-                'specific': []
-            };
-        });
 
+         // A dictionary with name keys just so adding values in the next step gets less messy.
+        ruleDef.data.forEach((index) => rules[(index.id + "")] =  index.value);
+        
+        
         shiftRules.data.forEach((index) => {
             if (index.hasOwnProperty('employee_id')) {
-                rules[(index.rule_id + "")].specific.push({
+                specificConstraintaValues[rules[(index.rule_id + "")]].push({
                     'employee_id' : index.employee_id,
                     'value' : index.value
                 });
             } else {
-                // if there are multiple generic values for a rule, we'll just pick the last generic value 
-                // for now.
-                rules[(index.rule_id + "")].generic = index.value;
-                constrantValues[rules[(index.rule_id + "")].name] = index.value
+                genericConstrantValues[rules[(index.rule_id + "")]] = index.value
             }
-
         });
 
         //  Adding employee data.
@@ -61,9 +95,7 @@ var ScheduleBuilder = function(app) {
                     'schedule': [],
                     'timeoffrequests': []
                 }
-
             });
-
             employeeIDList.push(index.id);
         });
 
@@ -84,12 +116,11 @@ var ScheduleBuilder = function(app) {
         });
 
         // Algorithm to set up shifts [FEATURE1 & FEATURE2].
-        Utils.buildSchedule(constrantValues, weeklySchedule, employeeIDList);
+        buildSchedule(genericConstrantValues, specificConstraintaValues, weeklySchedule, employeeIDList);
 
         app.setState({
-        	'rules': rules, 
-        	'data': weeklySchedule, // generic data which will be filtered upon employee choice.
-        	'employeeData': employees.data // need this for options tab.
+        	'data': weeklySchedule,    
+        	'employeeData': employees.data 
         });
     });
 

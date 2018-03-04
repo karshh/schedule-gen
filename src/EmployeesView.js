@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ScheduleView from './ScheduleView';
 
-class Employees extends Component {
+class EmployeesView extends Component {
 
 	constructor(props) {
 		super(props);
@@ -41,9 +41,6 @@ class Employees extends Component {
 			'valueName': valueName,
 			'valueSchedule': employeeSchedule
 		});
-
-
-
 	}
 
 	render() {
@@ -68,4 +65,4 @@ class Employees extends Component {
 }
 
 
-export default Employees;
+export default EmployeesView;

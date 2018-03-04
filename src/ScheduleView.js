@@ -8,16 +8,9 @@ class ScheduleView extends Component {
 		this.state = {
 			'header': []
 		}
-
 		this.state.header.push('Start Date');
 		for (var i = 1; i <= 7; i++) this.state.header.push('Day ' + i);
-
-
 	}
-
-	componentDidMount() {
-	}
-
 
 	render() {
 		return (

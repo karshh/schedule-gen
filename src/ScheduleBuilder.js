@@ -64,7 +64,7 @@ var ScheduleBuilder = function(app) {
         // Adding week data.
         weeks.data.forEach((index) => {
             Object.keys(weeklySchedule).forEach((key)  => {
-                if (key === index.id) {
+                if (parseInt(key) === index.id) {
                     weeklySchedule[key].start_date = index.start_date;
                 }
             })

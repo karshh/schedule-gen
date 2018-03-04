@@ -6,16 +6,44 @@ class Employees extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {Employees: [], 
-			value:'', 
-			valueName:''};
+			'value':'', 
+			'valueName':'',
+			'valueSchedule':{}
+		};
     	this.handleChange = this.handleChange.bind(this);
 	}
 
 	handleChange(e) {
+
+		var employeeSchedule = {};
+		var valueName = '';
+
+		if (e.target.value !== '') {
+			valueName = e.target.options[e.target.selectedIndex].text;
+			var info = this.props.scheduleInfo;
+			Object.keys(info).forEach((key) => {
+				
+				employeeSchedule[key] = {
+					'start_date': info[key].start_date,
+					'schedule': []
+				}
+
+				var schedInfo = info[key].schedules[e.target.value];
+				for (var i = 1; i <= 7; i++) {
+					var pushVal = '';
+					if (schedInfo.schedule.indexOf(i) >= 0) pushVal = 'WORK';
+					if (schedInfo.timeoffrequests.indexOf(i) >= 0) pushVal = 'TIME-OFF REQUEST';
+					employeeSchedule[key].schedule.push(pushVal);
+				}
+			});
+		}
 		this.setState({
-			value: e.target.value,
-			valueName: e.target.value === '' ? '' : e.target.options[e.target.selectedIndex].text
+			'value': e.target.value,
+			'valueName': valueName,
+			'valueSchedule': employeeSchedule
 		});
+
+
 
 	}
 
@@ -28,9 +56,12 @@ class Employees extends Component {
 						<option name={employee.name} key={employee.id} value={employee.id}>{employee.name}</option>
 					))}
 				</select>
-				{ this.state && this.state.valueName !== '' && <p> Employee : {this.state.valueName} </p> }
-
-				<ScheduleView employeeSchedule={this.props.scheduleInfo} />
+				{ this.state && 
+					this.state.valueName !== '' && 
+					<div>
+						<p> Employee : {this.state.valueName} </p> 
+						<ScheduleView employeeSchedule={this.state.valueSchedule} />
+					</div>}
 			</div>
 
 			);

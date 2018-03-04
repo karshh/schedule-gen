@@ -38,6 +38,10 @@ function buildSchedule(genericConstraintValues, specificConstraintValues, weekly
 
 }
 
+function axiosErrorMsg(err, msgEnd) {
+    console.log(err.message + " :Failed to get " + msgEnd + ".");
+}
+
 function ScheduleBuilder(app) {
 
 
@@ -59,11 +63,11 @@ function ScheduleBuilder(app) {
     specificConstraintaValues['MAX_SHIFTS'] = [];
 
     var PROMISES = [
-        axios.get(Variables.RULE_DEFINITIONS_URL),
-        axios.get(Variables.EMPLOYEES_URL),
-        axios.get(Variables.TIME_OFF_REQUESTS_URL),
-        axios.get(Variables.SHIFT_RULES_URL),
-        axios.get(Variables.WEEKS_URL)
+        axios.get(Variables.RULE_DEFINITIONS_URL).catch(err => axiosErrorMsg(err, "Rule Definitions")),
+        axios.get(Variables.EMPLOYEES_URL).catch(err => axiosErrorMsg(err, "Employee Data")),
+        axios.get(Variables.TIME_OFF_REQUESTS_URL).catch(err => axiosErrorMsg(err, "Time Off Requests")),
+        axios.get(Variables.SHIFT_RULES_URL).catch(err => axiosErrorMsg(err, "Shift Rules")),
+        axios.get(Variables.WEEKS_URL).catch(err => axiosErrorMsg(err, "Weekly data"))
     ];
 
     // push in a weekly schedule template.
@@ -75,7 +79,7 @@ function ScheduleBuilder(app) {
          // A dictionary with name keys just so adding values in the next step gets less messy.
         ruleDef.data.forEach((index) => rules[(index.id + "")] =  index.value);
         
-        
+
         shiftRules.data.forEach((index) => {
             if (index.hasOwnProperty('employee_id')) {
                 specificConstraintaValues[rules[(index.rule_id + "")]].push({
@@ -122,7 +126,8 @@ function ScheduleBuilder(app) {
         	'data': weeklySchedule,    
         	'employeeData': employees.data 
         });
-    });
+    })
+    .catch((err) => app.setState({ 'data': {}, 'employeeData': []}));
 
 }
 

@@ -8,7 +8,8 @@ class EmployeesView extends Component {
 		this.state = {Employees: [], 
 			'value':'', 
 			'valueName':'',
-			'valueSchedule':{}
+			'valueSchedule':{},
+			'data': []
 		};
     	this.handleChange = this.handleChange.bind(this);
 	}
@@ -43,12 +44,19 @@ class EmployeesView extends Component {
 		});
 	}
 
+
+	componentDidMount() {
+		if (this.props && this.props.hasOwnProperty('employeeData'))
+			this.setState({'data' : this.props.employeeData});
+	}
+
+
 	render() {
 		return (
 			<div>
 				<select id='employeeSelector' value={this.state.value} onChange={this.handleChange}>
 					<option value=''>- Select Employee -</option>
-					{this.props.employeeData.map((employee) => (
+					{this.state.data.map((employee) => (
 						<option name={employee.name} key={employee.id} value={employee.id}>{employee.name}</option>
 					))}
 				</select>

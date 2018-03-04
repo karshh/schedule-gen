@@ -8,6 +8,12 @@ var ScheduleBuilder = function(app) {
     var rules = {};
     var employeeIDList = [];
 
+    // Generic constraints. Dummy values.
+    var constrantValues = {}
+    constrantValues['EMPLOYEES_PER_SHIFT'] = 0;
+    constrantValues['MIN_SHIFTS'] = 0;
+    constrantValues['MAX_SHIFTS'] = 0;
+
     var PROMISES = [
         axios.get(Variables.BASE_URL + '/rule-definitions'),
         axios.get(Variables.BASE_URL + '/employees'),
@@ -27,7 +33,7 @@ var ScheduleBuilder = function(app) {
         ruleDef.data.forEach((index) => {
             rules[(index.id + "")] = {
                 'name': index.value,
-                'generic': [],
+                'generic': 0, 
                 'specific': []
             };
         });
@@ -39,9 +45,10 @@ var ScheduleBuilder = function(app) {
                     'value' : index.value
                 });
             } else {
-                // if there are multiple generic values for a rule, for now let's place them all in an
-                // array, and make a decision later which one we'll choose to be the correct generic value.
-                rules[(index.rule_id + "")].generic.push(index.value);
+                // if there are multiple generic values for a rule, we'll just pick the last generic value 
+                // for now.
+                rules[(index.rule_id + "")].generic = index.value;
+                constrantValues[rules[(index.rule_id + "")].name] = index.value
             }
 
         });
@@ -64,7 +71,7 @@ var ScheduleBuilder = function(app) {
         // Adding week data.
         weeks.data.forEach((index) => {
             Object.keys(weeklySchedule).forEach((key)  => {
-                if (parseInt(key) === index.id) {
+                if (parseInt(key,10) === index.id) {
                     weeklySchedule[key].start_date = index.start_date;
                 }
             })
@@ -76,16 +83,12 @@ var ScheduleBuilder = function(app) {
             weeklySchedule[(index.week + "")].schedules[(index.employee_id + "")].timeoffrequests = index.days;
         });
 
-
-        // Algorithm to set up shifts [FEATURE1].
-
-        var EMPLOYEES_PER_SHIFT = 2; //change this to get its actual value from JSON later.
-
-        Utils.buildSchedule(EMPLOYEES_PER_SHIFT, weeklySchedule, employeeIDList);
+        // Algorithm to set up shifts [FEATURE1 & FEATURE2].
+        Utils.buildSchedule(constrantValues, weeklySchedule, employeeIDList);
 
         app.setState({
         	'rules': rules, 
-        	'data': weeklySchedule, 
+        	'data': weeklySchedule, // generic data which will be filtered upon employee choice.
         	'employeeData': employees.data // need this for options tab.
         });
     });

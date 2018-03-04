@@ -1,7 +1,7 @@
 
 var Utils = {
-	buildSchedule: function(EMPLOYEES_PER_SHIFT, weeklySchedule, employeeIDList) {
-
+	buildSchedule: function(constraintValues, weeklySchedule, employeeIDList) {
+		var EMPLOYEES_PER_SHIFT = constraintValues['EMPLOYEES_PER_SHIFT'];
 	    Object.keys(weeklySchedule).forEach((key) => {
 
 	    	var sched = weeklySchedule[key].schedules;

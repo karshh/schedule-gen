@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './ScheduleView.css';
 
 class ScheduleView extends Component {
 
@@ -19,11 +20,10 @@ class ScheduleView extends Component {
 
 
 	render() {
-		var row = this.props.employeeSchedule.map
 		return (
 
 			<div align="center">
-				<table class="ScheduleTable">
+				<table>
 					<thead>
 					<tr>
 						{this.state.header.map(title => <th key={title}>{title}</th>)}

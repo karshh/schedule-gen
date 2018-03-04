@@ -1,0 +1,33 @@
+
+table {
+	border-collapse: collapse;
+	box-shadow: 1px 10px 60px gainsboro;
+	margin: 50px;
+}
+
+th, td {
+	border: 1px solid #D3D3D3;
+	padding: 18px;
+	font-size: 12px;
+	width: 173px;
+	text-align: center;
+}
+
+td:first-child, th:first-child {
+	text-align: left;
+}
+
+
+td:first-child {
+	background-color: #ddd;
+	color: #333333;
+}
+
+
+
+th {
+	background-color: #B22222;
+	color: #ddd;
+	font-weight: lighter;
+
+}

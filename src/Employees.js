@@ -15,28 +15,27 @@ class Employees extends Component {
 
 	handleChange(e) {
 
-		var employeeSchedule = {};
+		var employeeSchedule = [];
 		var valueName = '';
 
 		if (e.target.value !== '') {
 			valueName = e.target.options[e.target.selectedIndex].text;
 			var info = this.props.scheduleInfo;
 			Object.keys(info).forEach((key) => {
-				
-				employeeSchedule[key] = {
-					'start_date': info[key].start_date,
-					'schedule': []
-				}
-
+				var dat = {};
+				dat.start_date = (info[key].start_date);
 				var schedInfo = info[key].schedules[e.target.value];
 				for (var i = 1; i <= 7; i++) {
-					var pushVal = '';
-					if (schedInfo.schedule.indexOf(i) >= 0) pushVal = 'WORK';
-					if (schedInfo.timeoffrequests.indexOf(i) >= 0) pushVal = 'TIME-OFF REQUEST';
-					employeeSchedule[key].schedule.push(pushVal);
+					var daysched = '';
+					if (schedInfo.schedule.indexOf(i) >= 0) daysched = 'WORK';
+					if (schedInfo.timeoffrequests.indexOf(i) >= 0) daysched = 'TIME-OFF REQUEST';
+					dat[('day'+i)] = daysched;
+
 				}
+				employeeSchedule.push(dat);
 			});
 		}
+
 		this.setState({
 			'value': e.target.value,
 			'valueName': valueName,

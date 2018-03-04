@@ -4,58 +4,49 @@ class ScheduleView extends Component {
 
 	constructor(props) {
 		super(props);
-	}
+		this.state = {
+			'header': []
+		}
 
-	handleChange(e) {
+		this.state.header.push('Start Date');
+		for (var i = 1; i <= 7; i++) this.state.header.push('Day ' + i);
+
 
 	}
 
 	componentDidMount() {
-
 	}
 
-	renderTableHeaders() {
-		let tableHeader = [];
-		tableHeader.push(<th>Start Date</th>);
-		for(var i = 1; i <=7; i++) tableHeader.push(<th>Day {i}</th>); 
-
-		return tableHeader;
-
-	}
-
-	// renderTableRows() {
-	// 	let tableData = [];
-	// 	var info = this.props.employeeSchedule;
-	// 	Object.keys(info).forEach((key) => {
-	// 		tableData.push(<tr>);
-	// 		tableData.push(<td>{info[key].start_date}</td>);
-	// 		tableData.push(</tr>);
-
-	// 	});
-
-	// 	console.log(tableData);
-	// 	return tableData;
-
-	// }
 
 	render() {
+		var row = this.props.employeeSchedule.map
 		return (
 
-			<div>
-			<table>
-				<tr>
-					<th>Start Date</th>
-					{[1,2,3,4,5,6,7].map(i => <th>Day {i}</th>)}
-				</tr>
+			<div align="center">
+				<table class="ScheduleTable">
+					<thead>
+					<tr>
+						{this.state.header.map(title => <th key={title}>{title}</th>)}
+					</tr>
 
-				<tr>
-					
-				</tr>
-			</table>
-				<pre>
-
-            		{JSON.stringify(this.props.employeeSchedule, null, 10) }
-				</pre>
+					</thead>
+					<tbody>
+				      	{this.props.employeeSchedule.map(( listValue, index ) => {
+				          return (
+				            <tr key={index}>
+				              <td>{listValue.start_date}</td>
+				              <td>{listValue.day1}</td>
+				              <td>{listValue.day2}</td>
+				              <td>{listValue.day3}</td>
+				              <td>{listValue.day4}</td>
+				              <td>{listValue.day5}</td>
+				              <td>{listValue.day6}</td>
+				              <td>{listValue.day7}</td>
+				            </tr>
+				          );
+				        })}
+			      	</tbody>
+				</table>
 			</div>
 
 			);

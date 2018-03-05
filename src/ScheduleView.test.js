@@ -7,3 +7,4 @@ it('renders without crashing', () => {
   ReactDOM.render(<ScheduleView />, div);
   ReactDOM.unmountComponentAtNode(div);
 });
+

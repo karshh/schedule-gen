@@ -44,19 +44,13 @@ class EmployeesView extends Component {
 		});
 	}
 
-
-	componentDidMount() {
-		if (this.props && this.props.hasOwnProperty('employeeData'))
-			this.setState({'data' : this.props.employeeData});
-	}
-
-
 	render() {
+		if (!this.props.hasOwnProperty('employeeData')) return (<div><p>No data.</p></div>);
 		return (
 			<div>
 				<select id='employeeSelector' value={this.state.value} onChange={this.handleChange}>
 					<option value=''>- Select Employee -</option>
-					{this.state.data.map((employee) => (
+					{this.props.employeeData.map((employee) => (
 						<option name={employee.name} key={employee.id} value={employee.id}>{employee.name}</option>
 					))}
 				</select>

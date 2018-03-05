@@ -126,6 +126,9 @@ function ScheduleBuilder(app) {
         	'data': weeklySchedule,    
         	'employeeData': employees.data 
         });
+
+        console.log( weeklySchedule);
+        console.log( employees.data );
     })
     .catch((err) => app.setState({ 'data': {}, 'employeeData': []}));
 

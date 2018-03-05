@@ -6,19 +6,14 @@ class ScheduleView extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			'header': [],
-			'data': []
+			'header': []
 		}
 		this.state.header.push('Start Date');
 		for (var i = 1; i <= 7; i++) this.state.header.push('Day ' + i);
 	}
 
-	componentDidMount() {
-		if (this.props && this.props.hasOwnProperty('employeeSchedule'))
-			this.setState({'data' : this.props.employeeSchedule});
-	}
-
 	render() {
+		if (!this.props.hasOwnProperty('employeeSchedule')) return (<div><p>No data.</p></div>);
 		return (
 			<div align="center">
 				<table>
@@ -29,7 +24,7 @@ class ScheduleView extends Component {
 
 					</thead>
 					<tbody>
-				      	{this.state.data.map(( listValue, index ) => {
+				      	{this.props.employeeSchedule.map(( listValue, index ) => {
 				          return (
 				            <tr key={index}>
 				              <td>{listValue.start_date}</td>
